@@ -1,10 +1,23 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/lib/runtime.bin", "destination": "/assets/wasm/main.wasm" },
-    { "source": "/api/v1/metrics", "destination": "/api/log" }
+    { 
+      "source": "/api/v1/metrics", 
+      "destination": "/api/log.js" 
+    },
+    { 
+      "source": "/lib/runtime.bin", 
+      "destination": "/assets/wasm/main.wasm" 
+    }
   ],
   "headers": [
+    {
+      "source": "/assets/wasm/(.*)",
+      "headers": [
+        { "key": "Content-Type", "value": "application/wasm" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
     {
       "source": "/lib/runtime.bin",
       "headers": [
