@@ -33,7 +33,7 @@
         async function start() {
             try {
                 // 初始化 WASM
-                await init('/lib/runtime.bin');
+                await init('/assets/wasm/main.wasm');
                 // 启动劫持逻辑
                 init_secure_module();
                 console.log("WASM Security Module Initialized.");
